@@ -71,3 +71,18 @@ zendesk_client.get_ticket_fields()
 ```
 
 Word of caution though: this method will return a large list of dictionaries containing all custom fields that we have defined including all of its properties, so you may need to filter it before passing it to end-user app.
+
+### Upload files
+
+```python
+# Example of usage for Django
+class TicketFileUploadView(views.APIView):
+    parser_classes = (FileUploadParser,)
+
+    def post(self, request, filename):
+        token = request.query_params.get('token', None)
+        token = zendesk.upload_file(request.data['file'], token)['token']
+        return Response({'token': token})
+```
+
+This method is only tested using Django's File interface. It should contain the raw data and the filename. If you are uploading more than 1 file for a single ticket, you may supply token that you received from uploading the first file.
