@@ -3,16 +3,25 @@ import requests
 
 name = "stoqo_zendesk"
 
+DUMMY_UUID = '00000000-00000000-00000000-00000000'
+DUMMY_STORE_NAME = 'STOQO Tester'
+
 
 class Zendesk():
     _JSON_HEADER = {'content-type': 'application/json'}
     _BINARY_HEADER = {'content-type': 'application/binary'}
     _BASE_URL = f'https://stoqotrial.zendesk.com/api/v2'
 
-    def __init__(self, email, token):
+    def __init__(self, email, token, dev=False):
         self.auth = (f'{email}/token', token)
+        if dev:
+            self.dev_mode = True
 
     def get_or_create_user(self, store_id, store_name):
+        if self.dev_mode:
+            store_id = DUMMY_UUID
+            store_name = DUMMY_STORE_NAME
+
         url = f'{self._BASE_URL}/users/search.json?external_id={store_id}'
         response = requests.get(url, auth=self.auth)
         self._validate_response(response, 200)
@@ -23,6 +32,9 @@ class Zendesk():
         return data['users'][0]
 
     def get_tickets(self, user_id):
+        if self.dev_mode:
+            user_id = DUMMY_UUID
+
         url = f'{self._BASE_URL}/users/{user_id}/tickets/requested.json'
         response = requests.get(url, auth=self.auth)
         self._validate_response(response, 200)
@@ -30,6 +42,9 @@ class Zendesk():
         return response.json()['tickets']
 
     def create_ticket(self, user_id, subject, description, custom_fields, attachment_token=None):
+        if self.dev_mode:
+            user_id = DUMMY_UUID
+
         comment = {'body': description}
         if attachment_token:
             comment['uploads'] = [attachment_token]
@@ -87,13 +102,14 @@ class Zendesk():
                 'subject': ticket['subject'],
                 'action': self._find_value_by_id(custom_fields, 360015422174),
                 'description': ticket['description'],
+                'sku_with_quantity': self._find_value_by_id(custom_fields, 360015384213),
             })
         return result
 
-    def _create_user(self, external_id, name):
+    def _create_user(self, external_id, user_name):
         payload = json.dumps({
             'user': {
-                'name': name,
+                'name': user_name,
                 'verified': True,
                 'external_id': str(external_id),
             }

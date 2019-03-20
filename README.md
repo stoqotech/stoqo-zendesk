@@ -7,12 +7,19 @@ This library is a thin wrapper with standardized interface for interacting with 
 
 ## Installation Instructions
 
-TODO: write EB deployment key method once we know how
+Elastic Beanstalk SSH access keys needs to be configured before we can install package from private repository using `pip`. Make sure that `.ebextensions/private-pip-ssh-keys.config` exists in your repository, else consult your backend team. After that, add the following line to `requirements.txt` then run `pip instal -r requirements.txt`
+
+```
+git+ssh://git@bitbucket.org/stoqo/stoqo-zendesk@master#egg=stoqo-zendesk
+```
 
 ```python
 from stoqo_zendesk import Zendesk
 
 zendesk_client = Zendesk(email, password)
+
+# If you are in local dev environment, set dev to True. This will prevent us from polluting our production data.
+zendesk_client = Zendesk(email, password, dev=True)
 ```
 
 ## Usage
@@ -81,7 +88,7 @@ class TicketFileUploadView(views.APIView):
 
     def post(self, request, filename):
         token = request.query_params.get('token', None)
-        token = zendesk.upload_file(request.data['file'], token)['token']
+        token = zendesk_client.upload_file(request.data['file'], token)['token']
         return Response({'token': token})
 ```
 
