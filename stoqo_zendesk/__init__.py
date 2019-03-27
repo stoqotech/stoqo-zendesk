@@ -14,8 +14,7 @@ class Zendesk():
 
     def __init__(self, email, token, dev=False):
         self.auth = (f'{email}/token', token)
-        if dev:
-            self.dev_mode = True
+        self.dev_mode = dev
 
     def get_or_create_user(self, store_id, store_name):
         if self.dev_mode:
