@@ -10,7 +10,7 @@ DUMMY_STORE_NAME = 'STOQO Tester'
 class Zendesk():
     _JSON_HEADER = {'content-type': 'application/json'}
     _BINARY_HEADER = {'content-type': 'application/binary'}
-    _BASE_URL = f'https://stoqotrial.zendesk.com/api/v2'
+    _BASE_URL = f'https://stoqo.zendesk.com/api/v2'
 
     def __init__(self, email, token, dev=False):
         self.auth = (f'{email}/token', token)
