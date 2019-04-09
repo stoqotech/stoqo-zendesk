@@ -31,9 +31,6 @@ class Zendesk():
         return data['users'][0]
 
     def get_tickets(self, user_id):
-        if self.dev_mode:
-            user_id = DUMMY_UUID
-
         url = f'{self._BASE_URL}/users/{user_id}/tickets/requested.json'
         response = requests.get(url, auth=self.auth)
         self._validate_response(response, 200)
@@ -41,9 +38,6 @@ class Zendesk():
         return response.json()['tickets']
 
     def create_ticket(self, user_id, subject, description, custom_fields, attachment_token=None):
-        if self.dev_mode:
-            user_id = DUMMY_UUID
-
         comment = {'body': description}
         if attachment_token:
             comment['uploads'] = [attachment_token]
