@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="stoqo_zendesk",
-    version="1.1.3",
+    version="1.2.0",
     author="STOQO",
     author_email="tech@stoqo.com",
     description="STOQO-Zendesk unifying interface",

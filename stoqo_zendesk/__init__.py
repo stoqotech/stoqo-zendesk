@@ -37,6 +37,13 @@ class Zendesk():
 
         return response.json()['tickets']
 
+    def get_ticket_attachments(self, ticket_id):
+        url = f'{self._BASE_URL}/tickets/{ticket_id}/comments.json'
+        response = requests.get(url, auth=self.auth)
+        self._validate_response(response, 200)
+
+        return response.json()['comments'][0]['attachments']
+
     def create_ticket(self, user_id, subject, description, custom_fields, attachment_token=None):
         comment = {'body': description}
         if attachment_token:
