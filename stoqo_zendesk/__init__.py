@@ -44,19 +44,21 @@ class Zendesk():
 
         return response.json()['comments'][0]['attachments']
 
-    def create_ticket(self, user_id, subject, description, custom_fields, attachment_token=None):
+    def create_ticket(self, user_id, subject, description, custom_fields, attachment_token=None, submitter_id=None):
         comment = {'body': description}
         if attachment_token:
             comment['uploads'] = [attachment_token]
 
-        payload = json.dumps({
-            'ticket': {
-                'subject': subject,
-                'comment': comment,
-                'custom_fields': custom_fields,
-                'requester_id': user_id,
-            }
-        })
+        ticket = {
+            'subject': subject,
+            'comment': comment,
+            'custom_fields': custom_fields,
+            'requester_id': user_id,
+        }
+        if submitter_id is not None:
+            ticket['submitter_id'] = submitter_id
+
+        payload = json.dumps({'ticket': ticket})
         url = f'{self._BASE_URL}/tickets.json'
         headers = self._JSON_HEADER
 
