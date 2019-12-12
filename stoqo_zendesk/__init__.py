@@ -1,10 +1,18 @@
 import json
 import requests
 
-name = "stoqo_zendesk"
+name = 'stoqo_zendesk'
 
 DUMMY_UUID = '00000000-00000000-00000000-00000000'
 DUMMY_STORE_NAME = 'STOQO Tester'
+
+# Status Variable
+NEW = 'new'
+OPEN = 'open'
+PENDING = 'pending'
+HOLD = 'hold'
+SOLVED = 'solved'
+CLOSED = 'closed'
 
 
 class Zendesk():
@@ -44,7 +52,7 @@ class Zendesk():
 
         return response.json()['comments'][0]['attachments']
 
-    def create_ticket(self, user_id, subject, description, custom_fields, attachment_token=None, submitter_id=None):
+    def create_ticket(self, user_id, subject, description, custom_fields, attachment_token=None, submitter_id=None, status=NEW):
         comment = {'body': description}
         if attachment_token:
             comment['uploads'] = [attachment_token]
@@ -54,6 +62,7 @@ class Zendesk():
             'comment': comment,
             'custom_fields': custom_fields,
             'requester_id': user_id,
+            'status': status,
         }
         if submitter_id is not None:
             ticket['submitter_id'] = submitter_id
@@ -75,7 +84,7 @@ class Zendesk():
         return response.json()['ticket_fields']
 
     def upload_file(self, file, token):
-        '''See README on how to use this method properly'''
+        """See README on how to use this method properly"""
         url = f'{self._BASE_URL}/uploads.json?filename={file.name}'
         if token:
             url = f'{url}&token={token}'
@@ -87,7 +96,7 @@ class Zendesk():
         return response.json()['upload']
 
     def flatten_ticket_custom_fields(self, tickets):
-        '''Flatten ticket's custom fields to be easily consumed'''
+        """Flatten ticket's custom fields to be easily consumed"""
         result = []
         for ticket in tickets:
             custom_fields = ticket['custom_fields']
